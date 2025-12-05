@@ -1,64 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { fetchUserOrders } from "../redux/slices/orderSlice";
 const MyOrder = () => {
-    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { orders, loading, error } = useSelector((state) => state.order);
     useEffect(() => {
-        setTimeout(() => {
-            const mockOrders = [
-                {
-                    _id: "112",
-                    createdAt: new Date(),
-                    shippingAddress: { city: "New York", country: "USA" },
-                    orderItems: [{
-                        name: "Product1",
-                        image: "https://picsum.photos/500/500?random=1",
-                    }],
-                    totalPrice: 100,
-                    isPaid: false
-                },
-                {
-                    _id: "1121",
-                    createdAt: new Date(),
-                    shippingAddress: { city: "New York", country: "USA" },
-                    orderItems: [{
-                        name: "Product2",
-                        image: "https://picsum.photos/500/500?random=2",
-                    }],
-                    totalPrice: 200,
-                    isPaid: true
-                },
-                {
-                    _id: "1122",
-                    createdAt: new Date(),
-                    shippingAddress: { city: "New York", country: "USA" },
-                    orderItems: [{
-                        name: "Product3",
-                        image: "https://picsum.photos/500/500?random=4",
-                    }],
-                    totalPrice: 500,
-                    isPaid: true
-                },
-                {
-                    _id: "1123",
-                    createdAt: new Date(),
-                    shippingAddress: { city: "New York", country: "USA" },
-                    orderItems: [{
-                        name: "Product6",
-                        image: "https://picsum.photos/500/500?random=3",
-                    }],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-            ];
-            setOrders(mockOrders);
-        }, 1000);
-    }, []);
+        dispatch(fetchUserOrders());
+    }, [dispatch]);
 
     const handleRowClick = (orderId) => {
         navigate(`/order/${orderId}`)
     }
+    if (loading) return <p>Loading...</p>
+    if (error) return <p>Error :{error}</p>
     return (
         <div className='max-w-7xl mx-auto p-4 sm:p-6'>
             <h2 className="text-xl sm:text-2xl font-bold mb-6">

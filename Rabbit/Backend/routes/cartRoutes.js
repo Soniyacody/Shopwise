@@ -39,7 +39,9 @@ router.post("/", async (req, res) => {
         cart.products.push({
           productId,
           name: product.name,
-          image: product.images,
+          image: Array.isArray(product.images)
+            ? product.images[0]?.url || ""
+            : product.images || "",
           price: product.price,
           size,
           color,
@@ -130,7 +132,7 @@ router.delete("/", async (req, res) => {
     if (productIndex > -1) {
       cart.products.splice(productIndex, 1);
       cart.totalPrice = cart.products.reduce(
-        (acc, item) => acc + item.price * item.quantiy,
+        (acc, item) => acc + item.price * item.quantity,
         0
       );
       await cart.save();

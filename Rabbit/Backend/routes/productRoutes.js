@@ -128,6 +128,7 @@ router.put("/:id", protect, admin, async (req, res) => {
 router.delete("/:id", protect, admin, async (req, res) => {
   try {
     // Find the product by ID
+
     const product = await Product.findById(req.params.id);
     if (product) {
       // Remove from the database

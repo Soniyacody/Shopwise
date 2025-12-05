@@ -3,11 +3,21 @@ import { FaFilter } from "react-icons/fa"
 import FilterSidebar from '../components/Products/FilterSidebar';
 import SortOptions from '../components/Products/SortOptions';
 import ProductGrid from '../components/Products/ProductGrid';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductByfilters } from "../redux/slices/productsSlice";
 const CollectionPage = () => {
-    const [products, setProducts] = useState([]);
+    const { collection } = useParams();
+    const [searchParam] = useSearchParams();
+    const dispatch = useDispatch();
+    const { products, loading, error } = useSelector((state) => state.products);
+    const queryParams = Object.fromEntries([...searchParam]);
+
     const sidebarRef = useRef(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+    useEffect(() => {
+        dispatch(fetchProductByfilters({ collection, ...queryParams }));
+    }, [dispatch, collection, searchParam]);
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     }
@@ -24,86 +34,7 @@ const CollectionPage = () => {
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, []);
 
-    useEffect(() => {
-        setTimeout(() => {
-            const fetchedProducts = [
-                {
-                    _id: 1,
-                    name: "product 1",
-                    price: 100,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=1",
-                        altText: "Stylish Jacket 1"
-                    }],
-                },
-                {
-                    _id: 2,
-                    name: "product 2",
-                    price: 100,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=2",
-                        altText: "Stylish Jacket 2"
-                    }],
-                },
-                {
-                    _id: 3,
-                    name: "product 3",
-                    price: 300,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=3",
-                        altText: "Stylish Jacket 3"
-                    }],
-                },
-                {
-                    _id: 4,
-                    name: "product 4",
-                    price: 400,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=4",
-                        altText: "Stylish Jacket 4"
-                    }],
-                },
-                {
-                    _id: 5,
-                    name: "product 5",
-                    price: 500,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=5",
-                        altText: "Stylish Jacket 5"
-                    }],
-                },
 
-                {
-                    _id: 6,
-                    name: "product 6",
-                    price: 600,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=6",
-                        altText: "Stylish Jacket 6"
-                    }],
-                },
-                {
-                    _id: 7,
-                    name: "product 7",
-                    price: 700,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=7",
-                        altText: "Stylish Jacket 7"
-                    }],
-                },
-                {
-                    _id: 8,
-                    name: "product 8",
-                    price: 800,
-                    images: [{
-                        url: "https://picsum.photos/500/500?random=8",
-                        altText: "Stylish Jacket 8"
-                    }],
-                },
-            ];
-            setProducts(fetchedProducts);
-        }, 1000);
-    }, []);
     return (
         <div className='flex flex-col lg:flex-row'>
             {/* Mobile Filter button */}
@@ -120,7 +51,7 @@ const CollectionPage = () => {
                 <SortOptions />
 
                 {/* Product Grid */}
-                <ProductGrid products={products} />
+                <ProductGrid products={products} loading={loading} error={error} />
             </div>
         </div>
     )
